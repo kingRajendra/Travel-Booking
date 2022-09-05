@@ -1,48 +1,62 @@
-import "./App.css";
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Input, Card } from 'antd';
+import React from 'react';
+import countries from './Countries';
+import './App.css';
 
+export default class Search extends React.Component{
 
-function Search() {
-    const { countries, setCountries } = useState([]);
-    const [countryMatch, setCountryMatch] = useState([]);
+    constructor(props){
+        super(props)
+        this.state = {
+            suggestions: [],
+            text: ''
+        }
+    }
 
-    useEffect(() => {
-        const loadCountries = async () => {
-            const response = await axios.get("https://restcountries.com/v3.1/currency/dollar");
-            setCountries(response.data);
-        };
+    onTextChange = (e) => {
+        const value = e.target.value;
+        let suggestions = [];
+        if(value.length > 0){
+            const regex = new RegExp(`^${value}`, 'i');
+            suggestions = countries.sort().filter(v => regex.test(v))
+        }
 
-        loadCountries();
-    }, [setCountries]);
+        this.setState(() => ({
+            suggestions,
+            text: value
+        }))
+    }
 
-    console.log(countries);
+    selectedText(value) {
+        this.setState(() => ({
+            text: value,
+            suggestions: [],
+        }))
+    }
 
-    const searchCountries = (text) => {
-        let matches = countries.filter((country) => {
-            const regex = new RegExp(`${text}`, 'gi');
-            return country.name.match(regex) || country.capital.match(regex);
-        });
-        setCountryMatch(matches);
-    };
+    renderSuggestions = () => {
+        let { suggestions } = this.state;
+        if(suggestions.length === 0){
+            return null;
+        }
+        return (
+            <ul >
+                {
+                    suggestions.map((item, index) => (<li className='list' key={index} onClick={() => this.selectedText(item)}>{item}</li>))
+                }
+            </ul>
+        );
+    }
+    
+    render() {
+        const { text, suggestions } = this.state;
+        return(
+            <div id="search">
+                <h2>Search Destination</h2>
+                <input id="query" type="text" onChange={this.onTextChange} value={text}/>
+                {this.renderSuggestions()}
+                <span>Suggestions: {suggestions.length}</span>
+            </div>
+        );
+    }
 
-    return (
-        <div className="App">
-            <h2>Search Destination</h2>
-            <Input
-                style={{ width: "40%", margin: "10px" }}
-                placeholder="Enter Country or Capital Name"
-                onChange={(e) => searchCountries(e.target.value)} />
-            {countryMatch && countryMatch.map((item, index) => (
-                <div key={index} style={{ marginLeft: '35%', marginTop: "5px" }}>
-                    <Card style={{ width: "50%" }} title={`Country: ${item.name}`}>
-                        Capital: {item.capital}
-                    </Card>
-                </div>
-            ))}
-        </div>
-    )
 }
-
-export default Search;

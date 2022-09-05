@@ -5,7 +5,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-calendar/dist/Calendar.css';
-import "antd/dist/antd.css";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
