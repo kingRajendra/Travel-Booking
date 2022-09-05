@@ -8,7 +8,7 @@ export default function MyApp() {
   return (
     <div className = "App-calender">
         <center>
-          <h1> Choose your Travel Day</h1>
+          <h1> Choose your Travel Date</h1>
       <Calendar onChange={onChange} value={date} />
       {console.log(date)}
       {date.toString()}
